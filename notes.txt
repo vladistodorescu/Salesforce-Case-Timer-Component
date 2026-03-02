@@ -1,0 +1,28 @@
+REQUIREMENTS
+We want to implement an intelligent monitoring systems for Cases in our Org, wihch uses the following: a LWC, APEX, a Trigger and Custom Metadata.
+
+The purpose of the exercise is building a dynamic timer, which:
+   - calculates live activ time 
+   - handles pauses
+   - changes the Status automatically, with regards to configurable thresholds
+   - saves audit trail
+   - reacts accordingly to resets and data changes
+
+1. DATA MODEL
+We need to have following custom fields on the Case object:
+
+- SLA_Active__c (Checkbox; Sys. Admin visible)
+- SLA_Start__c (DateTime; visible to Sys Admin, and not in Case Page Layout, so hidden)
+- SLA_Paused__c (Checkbox; Sys. Admin visible)
+- Pause_Start__c (DateTime; read-only; Sys. Admin visible)
+- SLA_Total_Paused_Minutes__c (Number; Sys. Admin visible)
+- SLA_Status__c (Picklist: SLA_Status Picklist Value Set: Inactive, On Track, Warning, Breached; Sys. Admin visible)
+
+We also need:
+
+Custom Metadata Type:
+- SLA_Config__mdt
+  - Warning_Hours__c (Number)
+  - Breach_Hours__c (Number)
+
+We create this Custom Metadata Type, to avoid hardcoding values into our implementation, so that thresholds can be easily modified and the code is dynamic.
