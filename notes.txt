@@ -26,3 +26,19 @@ Custom Metadata Type:
   - Breach_Hours__c (Number)
 
 We create this Custom Metadata Type, to avoid hardcoding values into our implementation, so that thresholds can be easily modified and the code is dynamic.
+
+We first start with the Trigger on Case. We want to have a trigger on the object Case, that is bulk-ready to activate and deactivate cases. In the trigger we check for the records if SLA_Active__c changes from "false" to "true" or viceversa. If yes we add them to the according List and for each List (activation and deactiavtion) we do the corresponding action. The action is designed as method in the Service class of the object Case, and takes as parameters a list of objects of type Case.
+
+The activate/deactivate case methods are similar, checking to actually have a list of cases, then: 
+    - for activation: 
+         1. SLA_Start__c = NOW()
+         2. SLA_Status__c = On Track
+         3. SLA_Total_Paused_Minutes__c = 0
+    - for deactivation:
+         1. Reset all SLA fields
+         2. SLA_Status__c = 'Inactive'
+         3. LWC Timer must return to showing '00:00:00'
+
+After having the Case Activation/Deactivation process handles, we can now start wokring the Timer LWC. 
+In the HTML component we have a... (still need to add progress bar)
+
