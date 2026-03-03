@@ -1,0 +1,21 @@
+  <template>
+    <lightning-card title="SLA Monitor" icon-name="standard:clock">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+
+        <div class="slds-p-around_medium">
+            <template if:true={isSlaActive}>
+                
+                <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                    <span>SLA Status:</span>
+                    <lightning-badge label={statusLabel} class={badgeClass}></lightning-badge>
+                </div>
+
+                <div class="timer-display slds-m-vertical_small">
+                    <h1 class="font-mono">{formattedTimeSLA}</h1>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
