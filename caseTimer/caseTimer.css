@@ -1,0 +1,31 @@
+.slds-flex-column {
+    flex-direction: column;
+    width: 100%;
+}
+
+.font-mono {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1b1b1b;
+    letter-spacing: 2px;
+}
+
+.progress-container {
+    width: 80%;
+    max-width: 400px;
+}
+
+.timer-display {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.bar-red { 
+    --slds-c-progress-bar-fill-color-background: #ea001e; 
+}
+.bar-orange { 
+    --slds-c-progress-bar-fill-color-background: #ff9d3e; 
+}
+.bar-blue {
+     --slds-c-progress-bar-fill-color-background: #0176d3; 
+}
