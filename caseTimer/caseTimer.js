@@ -2,11 +2,10 @@ import { LightningElement, api, wire, track,  } from 'lwc';
 import { getRecord, getFieldValue, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-import updateStatusToOnTrack from '@salesforce/apex/CaseService.updateStatusToOnTrack';
-import updateStatusToWarning from '@salesforce/apex/CaseService.updateStatusToWarning';
-import updateStatusToBreached from '@salesforce/apex/CaseService.updateStatusToBreached';
-import getSettingsSLA from '@salesforce/apex/CaseService.getSettingsSLA';
-
+import updateStatusToOnTrack from '@salesforce/apex/CaseTimerController.updateStatusToOnTrack';
+import updateStatusToWarning from '@salesforce/apex/CaseTimerController.updateStatusToWarning';
+import updateStatusToBreached from '@salesforce/apex/CaseTimerController.updateStatusToBreached';
+import getSettingsSLA from '@salesforce/apex/CaseTimerController.getSettingsSLA';
 
 import SLA_ACTIVE_FIELD from '@salesforce/schema/Case.SLA_Active__c';
 import SLA_STATUS_FIELD from '@salesforce/schema/Case.SLA_Status__c';
@@ -19,6 +18,8 @@ export default class CaseTimer extends LightningElement {
     @api recordId;
     @track isLoading = true;
     @track formattedTimeSLA;
+    @track formattedDiffToBreachSLA;
+    @track breachDT;
 
     caseData;
     settingsSLA;
@@ -90,7 +91,7 @@ export default class CaseTimer extends LightningElement {
         this.timer = null;
     }
 
-    // 
+    // Methods
     calculateTime(){
         if (!this.caseData || !this.settingsSLA){
             return;
@@ -122,7 +123,7 @@ export default class CaseTimer extends LightningElement {
             this.formattedTimeSLA = "00:00:00";
         }
 
-        if (timeSLA > warningValueSLA && timeSLA < breachValueSLA){
+        if (timeSLA >= warningValueSLA && timeSLA < breachValueSLA){
             if (statusSLA != 'Warning'){
                 updateStatusToWarning({ recordId: this.recordId })
                 .then(() => {
@@ -131,6 +132,9 @@ export default class CaseTimer extends LightningElement {
                 })
                 .catch(error => console.error(error));
             }
+
+            let diffToBreach = breachValueSLA - timeSLA;
+            this.formattedDiffToBreachSLA = this.formatTime(diffToBreach);
         }
         if (timeSLA < warningValueSLA){
             if (statusSLA != 'On Track'){
@@ -142,7 +146,7 @@ export default class CaseTimer extends LightningElement {
                 .catch(error => console.error(error));
             }
         }
-        if (timeSLA > breachValueSLA){
+        if (timeSLA >= breachValueSLA){
             if (statusSLA != 'Breached'){
                 updateStatusToBreached({recordId : this.recordId})
                 .then(() => {
@@ -151,6 +155,14 @@ export default class CaseTimer extends LightningElement {
                 })
                 .catch(error => console.error(error));
             }
+            
+            if (!this.breachDT) {
+                const breachTimestampMs = startSLA + breachValueSLA + totalPause;
+                this.breachDT = this.formatDateTime(new Date(breachTimestampMs));
+            }
+
+            let diffToBreach = timeSLA - breachValueSLA;
+            this.formattedDiffToBreachSLA = this.formatTime(diffToBreach);
         }
     }
 
@@ -167,6 +179,21 @@ export default class CaseTimer extends LightningElement {
         const timeString = `${hh}:${mm}:${ss}`;
 
         return timeString;
+    }
+
+    formatDateTime(inputDate) {
+        const d = new Date(inputDate);
+    
+        // Extragem componentele și adăugăm un "0" în față dacă cifra este sub 10
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0'); // Lunile încep de la 0!
+        const year = String(d.getFullYear()).slice(-2); // Luăm doar ultimele 2 cifre (YY)
+    
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        const seconds = String(d.getSeconds()).padStart(2, '0');
+    
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     }
 
     // Getters
@@ -186,4 +213,13 @@ export default class CaseTimer extends LightningElement {
         return 'slds-theme_info';
     }
 
+    get isWarning(){
+        const status = this.statusLabel;
+        return status === 'Warning';
+    }
+
+    get isBreached(){
+        const status = this.statusLabel;
+        return status === 'Breached';
+    }
 }
