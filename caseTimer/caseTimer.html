@@ -4,16 +4,43 @@
             <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
         </template>
 
-        <div class="slds-p-around_medium">
+        <div class="slds-p-around_medium slds-text-align_center">
             <template if:true={isSlaActive}>
-                
-                <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
-                    <span>SLA Status:</span>
+                <div class="timer-display slds-m-vertical_small">
+                    <h1 class="font-mono">{formattedTimeSLA}</h1>
+                </div>
+
+                <div class="slds-grid slds-grid_vertical-align-center slds-m-top_small">
+                    <span class="slds-m-right_x-small">SLA Status:</span>
                     <lightning-badge label={statusLabel} class={badgeClass}></lightning-badge>
                 </div>
 
-                <div class="timer-display slds-m-vertical_small">
-                    <h1 class="font-mono">{formattedTimeSLA}</h1>
+                <template if:true={isWarning}>
+                    <div class="slds-m-vertical_small">
+                        <p class="slds-text-align_left slds-text-color_warning">
+                            You have <strong>{formattedDiffToBreachSLA}</strong> until breaching the allocated time!
+                        </p>
+                    </div>
+                </template>
+
+                <template if:true={isBreached}>
+                    <div class="slds-m-vertical_small">
+                        <p class="slds-text-align_left slds-text-color_error">
+                            Breach Moment: <strong>{breachDT}</strong> 
+                        </p>
+                        <p class="slds-text-align_left slds-text-color_error">
+                            Breached Time: <strong>{formattedDiffToBreachSLA}</strong> 
+                        </p>
+                    </div>
+                </template>
+
+            </template>
+
+            <template if:false={isSlaActive}>
+                <div class="slds-m-vertical_small">
+                    <p class="slds-text-align_left slds-text-color_warning">
+                        Please activate SLA on the Case to use SLA Monitor!
+                    </p>
                 </div>
             </template>
         </div>
