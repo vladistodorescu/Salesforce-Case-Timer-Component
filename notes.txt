@@ -1,5 +1,5 @@
 REQUIREMENTS
-We want to implement an intelligent monitoring systems for Cases in our Org, wihch uses the following: a LWC, APEX, a Trigger and Custom Metadata.
+We want to implement an intelligent monitoring system for Cases in our Org, wihch uses the following: a LWC, APEX, a Trigger and Custom Metadata.
 
 The purpose of the exercise is building a dynamic timer, which:
    - calculates live active time 
