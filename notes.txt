@@ -2,7 +2,7 @@ REQUIREMENTS
 We want to implement an intelligent monitoring systems for Cases in our Org, wihch uses the following: a LWC, APEX, a Trigger and Custom Metadata.
 
 The purpose of the exercise is building a dynamic timer, which:
-   - calculates live activ time 
+   - calculates live active time 
    - handles pauses
    - changes the Status automatically, with regards to configurable thresholds
    - saves audit trail
@@ -25,10 +25,19 @@ Custom Metadata Type:
   - Warning_Hours__c (Number)
   - Breach_Hours__c (Number)
 
-We create this Custom Metadata Type, to avoid hardcoding values into our implementation, so that thresholds can be easily modified and the code is dynamic.
+Custom Object:
+- SLA_Audit__c 
+   - Parent_Record__c (Lookup to Case)
+   - Old_Status__c (Text)
+   - New_Status__c (Text)
+   - Change_Timestamp__c (Datetime)
+   - Elapsed_Time__c (Datetiem)
 
-We first start with the Trigger on Case. We want to have a trigger on the object Case, that is bulk-ready to activate and deactivate cases. In the trigger we check for the records if SLA_Active__c changes from "false" to "true" or viceversa. If yes we add them to the according List and for each List (activation and deactiavtion) we do the corresponding action. The action is designed as method in the Service class of the object Case, and takes as parameters a list of objects of type Case.
+This Custom Metadata Type is created to avoid hardcoding values into our implementation, so that thresholds can be easily modified and the code is dynamic.
 
+We first start with the Trigger on Case. We want to have a trigger on the object Case, that is bulk-ready to activate/deactivate and pause/resume cases. 
+
+For Activation/Deactivation we look for records, where SLA_Active__c changes from "false" to "true" or viceversa. If any, we collect them into a List and send them we send the corresponding CaseService method.
 The activate/deactivate case methods are similar, checking to actually have a list of cases, then: 
     - for activation: 
          1. SLA_Start__c = NOW()
@@ -39,6 +48,21 @@ The activate/deactivate case methods are similar, checking to actually have a li
          2. SLA_Status__c = 'Inactive'
          3. LWC Timer must return to showing '00:00:00'
 
-After having the Case Activation/Deactivation process handles, we can now start wokring the Timer LWC. 
-In the HTML component we have a... (still need to add progress bar)
+For Pausing/Resuming, we look for records where SLA_Paused__c changes from "true" to "false" or viceversa. If any, we collect them into a List and send them we send the corresponding CaseService method.
+The pause/resume case methods are similar, checking to actually have a list of cases, then: 
+    - for pausing:
+         1. Timer pause
+         2. Store Pause_Start__c
+    - for resuming: 
+         1. Calculate and store SLA_Total_Minutes_Paused__c
+         2. Timer resume
+
+After having the Case Activation/Deactivation/Pause/Resume process handles, we can now start working the Timer LWC. 
+
+In the HTML component we first have a Gauge metric, which has 3 areas according to the 3 statuses avaialble ("On Track" - Green, "Warning" - Yellow, "Breached" - Red). The gauge is updated everytime the SLA Status of the Case Changes.
+Next, we have the actual timer component. Here we are shown the current time period in which the Case has been active (SLA_Active__c == true) and not paused (SLA_Paused__c == true in "HH:MM:SS") and this value is updated in the LWC every second. 
+Below the timer, we display the current SLA Status by comparing the SLA time spent on the case with the the dynamic thresholds, which we extract from the SLA_Config__mdt custom metadata type.
+   Status == 'On Track' --> we display SLA Status as 'On Track' and background color green
+   Status == 'Warning' --> we display SLA Status as 'Warning', background color yellow and below, also current remaining time until 'Breach' status, also calculated every second
+   Status == 'Breached' --> we display SLA Status as 'Breached', background color red, current breached time (calculated every second) and the exact DateTime moment, at which the SLA time has                                 been breached
 
