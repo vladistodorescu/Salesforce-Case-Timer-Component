@@ -35,6 +35,8 @@ Custom Object:
 
 This Custom Metadata Type is created to avoid hardcoding values into our implementation, so that thresholds can be easily modified and the code is dynamic.
 
+IMPLEMENTATION
+
 We first start with the Trigger on Case. We want to have a trigger on the object Case, that is bulk-ready to activate/deactivate and pause/resume cases. 
 
 For Activation/Deactivation we look for records, where SLA_Active__c changes from "false" to "true" or viceversa. If any, we collect them into a List and send them we send the corresponding CaseService method.
@@ -64,5 +66,8 @@ Next, we have the actual timer component. Here we are shown the current time per
 Below the timer, we display the current SLA Status by comparing the SLA time spent on the case with the the dynamic thresholds, which we extract from the SLA_Config__mdt custom metadata type.
    Status == 'On Track' --> we display SLA Status as 'On Track' and background color green
    Status == 'Warning' --> we display SLA Status as 'Warning', background color yellow and below, also current remaining time until 'Breach' status, also calculated every second
-   Status == 'Breached' --> we display SLA Status as 'Breached', background color red, current breached time (calculated every second) and the exact DateTime moment, at which the SLA time has                                 been breached
+   Status == 'Breached' --> we display SLA Status as 'Breached', background color red, current breached time (calculated every second) and the exact DateTime moment, at which the SLA time has been breached
 
+Besides that, for each SLA_Status__c change on a Case object, a SLA_Audit__c record will be created which stores the old status (before change), the new status (after change), the exact datetime timestamp of the change, and the elapsed time in the previous status. If previous SLA_Status__c is null, the elapsed time will be calculated as 'Now - CreatedDate', else 'Now - Last Change Timestamp'.
+
+All classes are tested and have over 80% code coverage.
