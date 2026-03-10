@@ -6,8 +6,6 @@ import updateStatusToOnTrack from '@salesforce/apex/CaseTimerController.updateSt
 import updateStatusToWarning from '@salesforce/apex/CaseTimerController.updateStatusToWarning';
 import updateStatusToBreached from '@salesforce/apex/CaseTimerController.updateStatusToBreached';
 import getSettingsSLA from '@salesforce/apex/CaseTimerController.getSettingsSLA';
-// singura mica prob e ca am definit in SLA metadata timpul ca Working_Hours cand pentru testing e mult mai useful sa fie in minute
-// si in cod folosesc ca minute
 
 import SLA_ACTIVE_FIELD from '@salesforce/schema/Case.SLA_Active__c';
 import SLA_STATUS_FIELD from '@salesforce/schema/Case.SLA_Status__c';
