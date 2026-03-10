@@ -29,3 +29,15 @@
 .bar-blue {
      --slds-c-progress-bar-fill-color-background: #0176d3; 
 }
+
+.gauge-container {
+    display: inline-block;
+}
+
+.needle-group {
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slds-text-heading_large {
+    font-size: 2rem;
+}
