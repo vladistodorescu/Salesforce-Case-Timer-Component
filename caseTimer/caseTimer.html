@@ -6,6 +6,29 @@
 
         <div class="slds-p-around_medium slds-text-align_center">
             <template if:true={isSlaActive}>
+                <div class="gauge-container slds-m-bottom_medium">
+                    <svg width="220" height="120" viewBox="0 0 200 120">
+                        <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#e0e0e0" stroke-width="15" />
+                        
+                        <path d="M20 100 A80 80 0 0 1 180 100" 
+                              fill="none" stroke="#4bb675" stroke-width="15" 
+                              stroke-dasharray="83.77 251.3" />
+                
+                        <path d="M20 100 A80 80 0 0 1 180 100" 
+                              fill="none" stroke="#ffd029" stroke-width="15" 
+                              stroke-dasharray="83.77 251.3" stroke-dashoffset="-83.77" />
+                
+                        <path d="M20 100 A80 80 0 0 1 180 100" 
+                              fill="none" stroke="#d32f2f" stroke-width="15" 
+                              stroke-dasharray="83.77 251.3" stroke-dashoffset="-167.54" />
+                
+                        <g transform={needleTransform} class="needle-group">
+                            <line x1="100" y1="100" x2="100" y2="35" stroke="#333" stroke-width="4" stroke-linecap="round" />
+                            <circle cx="100" cy="100" r="6" fill="#333" />
+                        </g>
+                    </svg>
+                </div>
+
                 <div class="timer-display slds-m-vertical_small">
                     <h1 class="font-mono">{formattedTimeSLA}</h1>
                 </div>
