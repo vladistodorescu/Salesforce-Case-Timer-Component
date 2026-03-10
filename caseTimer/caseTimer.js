@@ -6,6 +6,8 @@ import updateStatusToOnTrack from '@salesforce/apex/CaseTimerController.updateSt
 import updateStatusToWarning from '@salesforce/apex/CaseTimerController.updateStatusToWarning';
 import updateStatusToBreached from '@salesforce/apex/CaseTimerController.updateStatusToBreached';
 import getSettingsSLA from '@salesforce/apex/CaseTimerController.getSettingsSLA';
+// singura mica prob e ca am definit in SLA metadata timpul ca Working_Hours cand pentru testing e mult mai useful sa fie in minute
+// si in cod folosesc ca minute
 
 import SLA_ACTIVE_FIELD from '@salesforce/schema/Case.SLA_Active__c';
 import SLA_STATUS_FIELD from '@salesforce/schema/Case.SLA_Status__c';
@@ -91,7 +93,7 @@ export default class CaseTimer extends LightningElement {
         this.timer = null;
     }
 
-    // Methods
+    // METHODS
     calculateTime(){
         if (!this.caseData || !this.settingsSLA){
             return;
@@ -184,10 +186,9 @@ export default class CaseTimer extends LightningElement {
     formatDateTime(inputDate) {
         const d = new Date(inputDate);
     
-        // Extragem componentele și adăugăm un "0" în față dacă cifra este sub 10
         const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0'); // Lunile încep de la 0!
-        const year = String(d.getFullYear()).slice(-2); // Luăm doar ultimele 2 cifre (YY)
+        const month = String(d.getMonth() + 1).padStart(2, '0'); 
+        const year = String(d.getFullYear()).slice(-2); 
     
         const hours = String(d.getHours()).padStart(2, '0');
         const minutes = String(d.getMinutes()).padStart(2, '0');
@@ -196,7 +197,7 @@ export default class CaseTimer extends LightningElement {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     }
 
-    // Getters
+    // GETTERS
     get isSlaActive(){
         return getFieldValue(this.caseData, SLA_ACTIVE_FIELD);
     }
@@ -221,5 +222,22 @@ export default class CaseTimer extends LightningElement {
     get isBreached(){
         const status = this.statusLabel;
         return status === 'Breached';
+    }
+
+    get needleTransform() {
+        let rotation = -60; 
+        const status = this.statusLabel;
+     
+        if (status === 'On Track') {
+            rotation = -60; 
+        } 
+        else if (status === 'Warning') {
+            rotation = 0;   
+        } 
+        else if (status === 'Breached') {
+            rotation = 60;  
+        }
+    
+        return `rotate(${rotation} 100 100)`;
     }
 }
